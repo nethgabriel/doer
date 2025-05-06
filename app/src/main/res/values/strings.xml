@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">doer</string>
+    <string name="txt_tagline">Start planning your habit</string>>
+    <string name="txt_sign_up">Sign Up</string>
+    <string name="txt_login">Login</string>
+    <string name="txt_enter_email">Enter your email</string>
+    <string name="txt_email">Email</string>
+    <string name="txt_sample_email">name@domain.com</string>
+    <string name="txt_next">Next</string>
+    <string name="txt_password">Password</string>
+    <string name="txt_full_name">Full Name</string>
+    <string name="btn_back_description">Navigate to previous page</string>
+    <string name="form_description">Sign up details</string>
+    <string name="txt_create_password">Create a password</string>
+    <string name="txt_confirm_password">Confirm password</string>
+    <string name="txt_sample_password">password</string>
+    <string name='txt_password_guide'>Password must contain at least</string>
+    <string-array name="password_guide">
+        <item>1 number</item>
+        <item>1 special character (example: # ? ! $)</item>
+        <item>10 characters</item>
+    </string-array>
+</resources>
