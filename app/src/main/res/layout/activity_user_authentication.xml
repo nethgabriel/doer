@@ -76,11 +76,17 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:cornerRadius="50dp" />
-
-        <include
-            android:id="@+id/sign_up_overlay"
-            layout="@layout/login_form"
-            android:visibility="gone"
-            />
     </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/sign_up_stub"
+        android:layout="@layout/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/sign_up_overlay"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
