@@ -15,12 +15,14 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/btn_close"
+            android:id="@+id/btn_close_signup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
-            android:contentDescription="@string/btn_back_description"
+            android:contentDescription="@string/btn_close_description"
+            app:tint="@color/white"
             app:srcCompat="?attr/actionModeCloseDrawable" />
 
         <Space
@@ -36,13 +38,16 @@
             android:layout_weight="1"
             android:text="@string/txt_sign_up"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="16sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/section_enter_email"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="70dp"
+        android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="visible"
@@ -53,46 +58,53 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight=".8" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight=".25"
             android:text="@string/txt_enter_email"
+            android:textColor="@color/white"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
+            android:layout_weight=".25"
             android:text="@string/txt_email"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/editTextText"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="20dp"
             android:autofillHints="emailAddress"
+            android:background="@drawable/edit_text_style"
             android:ems="10"
-            android:hint="@string/txt_email"
-            android:inputType="text"
+            android:hint="@string/txt_sample_email"
+            android:inputType="textEmailAddress"
             android:minHeight="48dp"
-            android:text="@string/txt_sample_email"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray"
             android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:text="@string/txt_next" />
+        <include
+            android:id="@+id/block_email"
+            layout="@layout/btn_next" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/section_create_password"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="70dp"
+        android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="invisible"
@@ -103,62 +115,105 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight=".8" />
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_create_password_header"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:text="@string/txt_create_password"
-            android:textSize="24sp" />
+            android:layout_weight="0.25"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:weightSum="9">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="@string/btn_back_description"
+                app:srcCompat="?attr/actionModeCloseDrawable"
+                app:tint="@color/white" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".5" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="6"
+                android:text="@string/txt_create_password"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textView8"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/txt_password"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/editTextText2"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:autofillHints="password"
+            android:background="@drawable/edit_text_style"
             android:ems="10"
+            android:hint="@string/txt_sample_password"
             android:inputType="textPassword"
             android:minHeight="48dp"
-            android:text="@string/txt_sample_password" />
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray" />
 
         <TextView
             android:id="@+id/textView9"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
             android:text="@string/txt_confirm_password"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/editTextText3"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:autofillHints="password"
+            android:background="@drawable/edit_text_style"
             android:ems="10"
+            android:hint="@string/txt_sample_confirm_password"
             android:inputType="textPassword"
             android:minHeight="48dp"
-            android:text="@string/txt_sample_password" />
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray" />
 
         <TextView
             android:id="@+id/textView10"
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:text="@string/txt_password_guide"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <LinearLayout
-            android:layout_width="350dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
             <RadioGroup
@@ -167,11 +222,9 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:text="@string/txt_next" />
+        <include
+            android:id="@+id/block_password"
+            layout="@layout/btn_next" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
