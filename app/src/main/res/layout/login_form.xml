@@ -79,7 +79,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/input_email"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -129,9 +129,9 @@
             <ImageButton
                 android:id="@+id/btn_back"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.25"
                 android:backgroundTint="#00FFFFFF"
                 android:contentDescription="@string/btn_back_description"
                 app:srcCompat="?attr/actionModeCloseDrawable"
@@ -140,7 +140,7 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight=".5" />
+                android:layout_weight=".25" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -164,7 +164,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editTextText2"
+            android:id="@+id/input_password"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -188,7 +188,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editTextText3"
+            android:id="@+id/input_confirm_password"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -211,15 +211,13 @@
             android:textSize="16sp" />
 
         <LinearLayout
+            android:id="@+id/block_password_guide"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:enabled="false"
             android:orientation="vertical">
 
-            <RadioGroup
-                android:id="@+id/password_guide"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
         </LinearLayout>
 
         <include
