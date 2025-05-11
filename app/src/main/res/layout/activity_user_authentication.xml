@@ -80,7 +80,7 @@
 
     <ViewStub
         android:id="@+id/sign_up_stub"
-        android:layout="@layout/login_form"
+        android:layout="@layout/signup_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:inflatedId="@+id/sign_up_overlay"

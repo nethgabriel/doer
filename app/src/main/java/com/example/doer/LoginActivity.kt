@@ -9,15 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,68 +40,132 @@ class LoginActivity : AppCompatActivity() {
         signUpButton.setOnClickListener {
             if (signUpOverlay == null) {
 
-                //this makes the objects in "login_form.xml" functional and viewable
+                //this makes the objects in "signup_form.xml" functional and viewable
                 try {
                     signUpOverlay = signUpStub.inflate().apply {
                         val closeButton = findViewById<ImageButton>(R.id.btn_close_signup)
                         val emailSection = findViewById<View>(R.id.section_enter_email)
                         val passwordSection = findViewById<View>(R.id.section_create_password)
-                        val backButton = findViewById<ImageButton>(R.id.btn_back)
-                        val nextButton = findViewById<Button>(R.id.btn_next)
+                        val birthdateSection = findViewById<View>(R.id.section_birthdate)
 
                         //specifies which next button in a layout
                         val emailNextButton = emailSection.findViewById<Button>(R.id.btn_next)
                         val passwordNextButton = passwordSection.findViewById<Button>(R.id.btn_next)
+                        val birthdateNextButton = birthdateSection.findViewById<Button>(R.id.btn_next)
 
-//                        //paired each next button to its section
-//                        val sectionPair = listOf(
-//                            emailSection to emailNextButton,
-//                            passwordSection to passwordNextButton
-//                        )
 
                         //initialized list for available sections
                         //add here if adding sections
-                        val section = listOf(emailSection, passwordSection)
+                        val section = listOf(emailSection, passwordSection, birthdateSection)
                         var sectionIndex = 0
 
                         //initialized live section
                         var currentSection: View? = null
+
+                        //targets button depending on which section is active
+                        val nextButtons = section.map { it.findViewById<Button>(R.id.btn_next) }
 
                         //dynamically changes visibility of sections
                         fun updateStepState() {
                             section.forEachIndexed { index, section ->
                                 section.visibility = if (index == sectionIndex) View.VISIBLE else View.GONE
 
-                                //saved live section
-                                if (isVisible) currentSection = section
+                                //save live section
+                                if (index == sectionIndex) currentSection = section
                             }
                         }
 
-                        //closes "login_form.xml" without terminating functionality
+                        fun clearAllEditTexts(viewGroup: ViewGroup) {
+                            for (i in 0 until viewGroup.childCount) {
+                                val view = viewGroup.getChildAt(i)
+                                when (view) {
+                                    is EditText -> view.text.clear()
+                                    is ViewGroup -> clearAllEditTexts(view)
+                                }
+                            }
+                        }
+
+                        fun disableAllNextButton() {
+                            //disable all next buttons initially
+                            nextButtons.forEach { it.isEnabled = false }
+
+                            //open birthdate next button for development
+                            nextButtons[2].isEnabled = true
+                        }
+
+                        //closes "signup_form.xml" without terminating functionality
                         closeButton.setOnClickListener {
                             visibility = View.GONE
+
+                            //note sure
+//                            clearAllEditTexts(signUpOverlay as ViewGroup)
+//                            disableAllNextButton()
+
                         }
 
-                        //access previous user inputs
-                        backButton.setOnClickListener {
-                            sectionIndex--
-                            updateStepState()
+                        //initialized back button for each section
+                        val backButtons = section.mapIndexedNotNull { index, view ->
+                            val backButton = view.findViewById<ImageButton?>(R.id.btn_back)
 
-                            //used live section to target specific button
-                            val enabledButton = currentSection?.findViewById<Button>(R.id.btn_next)
-                            enabledButton?.isEnabled = true
+                            //checks for non-existent back button, if non-existent return null to index
+                            if (backButton != null) index to backButton else null
                         }
 
-                        nextButton.setOnClickListener {
-                            if (sectionIndex < section.size - 1) {
-                                sectionIndex++
-                                updateStepState()
+                        //back button function
+                        backButtons.forEach { (index, button) ->
+                            button.setOnClickListener {
+                                if (index > 0) {
+                                    sectionIndex = index - 1
+                                    updateStepState()
+
+                                    val enabledButton = currentSection?.findViewById<Button>(R.id.btn_next)
+                                    enabledButton?.isEnabled = true
+                                }
                             }
                         }
 
-                        //set initial value to false for section control
-                        emailNextButton.isEnabled = false
-                        passwordNextButton.isEnabled = false
+
+//                        //access previous user inputs
+//                        backButton.setOnClickListener {
+//                            if (sectionIndex > 0) {
+//                                sectionIndex--
+//                                updateStepState()
+//                                val enabledButton = currentSection?.findViewById<Button>(R.id.btn_next)
+//                                enabledButton?.isEnabled = true
+//                            }
+//                        }
+
+                        //attach click listeners to each next button
+                        nextButtons.forEachIndexed { index, button ->
+                            button.setOnClickListener {
+                                if (sectionIndex < section.size - 1) {
+                                    sectionIndex = index + 1
+                                    updateStepState()
+                                }
+                            }
+                        }
+
+                        disableAllNextButton()
+
+//                        //disable all next buttons initially
+//                        nextButtons.forEach { it.isEnabled = false }
+//
+//                        //open birthdate next button for development
+//                        nextButtons[2].isEnabled = true
+
+//                        nextButton.setOnClickListener {
+////                            val disableButton = currentSection?.findViewById<Button>(R.id.btn_next)
+////                            disableButton?.isEnabled = false
+//                            if (sectionIndex < section.size - 1) {
+//                                sectionIndex++
+//                                updateStepState()
+//                            }
+//                        }
+
+//                        //set initial value to false for section control
+//                        emailNextButton.isEnabled = false
+//                        passwordNextButton.isEnabled = false
+//                        birthdateNextButton.isEnabled = false
 
                         val emailInput = findViewById<EditText>(R.id.input_email)
 
@@ -207,6 +272,7 @@ class LoginActivity : AppCompatActivity() {
                                                 passwordInput.error = null
 
                                             } else {
+                                                passwordNextButton.isEnabled = false
                                                 confirmPasswordInput.error = "Password mismatch."
                                             }
                                         }
@@ -235,12 +301,21 @@ class LoginActivity : AppCompatActivity() {
                             override fun afterTextChanged(s: Editable?) {}
                         })
 
+                        val dateStyle = ContextThemeWrapper(context, R.style.SpinnerDatePickerDialogDark)
+                        val datePicker = DatePicker(dateStyle, null, android.R.attr.datePickerStyle).apply {
+                            calendarViewShown = false
+                            spinnersShown = true
+                        }
+
+                        val layout = findViewById<LinearLayout>(R.id.container_date_picker)
+                        layout.addView(datePicker)
+
                     }
                 } catch (e: Exception) {
                     TODO("Not yet implemented")
                 }
             } else {
-                //shows "login_form.xml"
+                //shows "signup_form.xml"
                 signUpOverlay?.visibility = View.VISIBLE
             }
         }
