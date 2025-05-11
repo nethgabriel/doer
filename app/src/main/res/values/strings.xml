@@ -16,10 +16,11 @@
     <string name="txt_confirm_password">Confirm password</string>
     <string name="txt_sample_password">password</string>
     <string name="txt_sample_confirm_password">confirm password</string>
-    <string name='txt_password_guide'>Password must contain at least</string>
+    <string name="txt_password_guide">Password must contain at least</string>
     <string-array name="password_guide">
         <item>1 number</item>
         <item>1 special character (example: # ? ! $)</item>
         <item>10 characters</item>
     </string-array>
+    <string name="txt_birthdate_title">Select your birth date</string>
 </resources>

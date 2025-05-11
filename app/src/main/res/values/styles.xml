@@ -5,4 +5,19 @@
         <item name="android:buttonTint">@color/white</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
+
+    <style name="SpinnerDatePickerDialogDark" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+        <!-- Divider color -->
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="android:datePickerStyle">@style/SpinnerDatePicker</item>
+    </style>
+
+    <style name="SpinnerDatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
+
 </resources>
