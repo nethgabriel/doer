@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:weightSum="5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,8 +22,8 @@
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
             android:contentDescription="@string/btn_close_description"
-            app:tint="@color/white"
-            app:srcCompat="?attr/actionModeCloseDrawable" />
+            app:srcCompat="?attr/actionModeCloseDrawable"
+            app:tint="@color/white" />
 
         <Space
             android:layout_width="0dp"
@@ -50,7 +50,7 @@
         android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:weightSum="10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -107,7 +107,7 @@
         android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:weightSum="10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -169,7 +169,8 @@
             android:minHeight="48dp"
             android:padding="8dp"
             android:textColor="@color/white"
-            android:textColorHint="@color/gray" />
+            android:textColorHint="@color/gray"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/textView9"
@@ -193,7 +194,8 @@
             android:minHeight="48dp"
             android:padding="8dp"
             android:textColor="@color/white"
-            android:textColorHint="@color/gray" />
+            android:textColorHint="@color/gray"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/textView10"
