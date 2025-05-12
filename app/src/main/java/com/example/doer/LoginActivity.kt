@@ -118,8 +118,8 @@ class LoginActivity : AppCompatActivity() {
                                     sectionIndex = index - 1
                                     updateStepState()
 
-                                    val enabledButton = currentSection?.findViewById<Button>(R.id.btn_next)
-                                    enabledButton?.isEnabled = true
+//                                    val enabledButton = currentSection?.findViewById<Button>(R.id.btn_next)
+//                                    enabledButton?.isEnabled = true
                                 }
                             }
                         }

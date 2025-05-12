@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:weightSum="5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -50,7 +50,7 @@
         android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:weightSum="10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -107,7 +107,7 @@
         android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:weightSum="10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
