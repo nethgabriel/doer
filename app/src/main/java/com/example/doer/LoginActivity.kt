@@ -1,5 +1,7 @@
 package com.example.doer
 
+import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,10 +19,16 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
+import android.text.InputType
+import android.view.MotionEvent
+
 
 class LoginActivity : AppCompatActivity() {
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
+        // TODO: create another view stub for login 
         //this is to make "signupOverlay" nullable
         var signUpOverlay: View? = null
 
@@ -51,6 +60,9 @@ class LoginActivity : AppCompatActivity() {
                         //specifies which next button in a layout
                         val emailNextButton = emailSection.findViewById<Button>(R.id.btn_next)
                         val passwordNextButton = passwordSection.findViewById<Button>(R.id.btn_next)
+
+                        //developing terms and condition form, dismiss variable never used
+                        // TODO: develop form after birthdate 
                         val birthdateNextButton = birthdateSection.findViewById<Button>(R.id.btn_next)
 
 
@@ -60,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
                         var sectionIndex = 0
 
                         //initialized live section
+                        //this is used, DO NOT DELETE, dismiss variable never accessed
                         var currentSection: View? = null
 
                         //targets button depending on which section is active
@@ -75,10 +88,10 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
 
+                        //clear all text input fields
                         fun clearAllEditTexts(viewGroup: ViewGroup) {
                             for (i in 0 until viewGroup.childCount) {
-                                val view = viewGroup.getChildAt(i)
-                                when (view) {
+                                when (val view = viewGroup.getChildAt(i)) {
                                     is EditText -> view.text.clear()
                                     is ViewGroup -> clearAllEditTexts(view)
                                 }
@@ -93,13 +106,63 @@ class LoginActivity : AppCompatActivity() {
                             nextButtons[2].isEnabled = true
                         }
 
+                        // TODO: include snackbar for success message 
+                        // Global flag to track Snackbar visibility
+                        var isSnackbarVisible = false
+                        // Global variable to store the reference to the current Snackbar
+                        var currentSnackbar: Snackbar? = null
+
+                        fun showSnackbar(view: View, message: String) {
+                            // If a Snackbar is already visible, do not show it again
+                            if (isSnackbarVisible) return
+
+                            // Show Snackbar and set the flag to true
+                            currentSnackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG).apply {
+
+                                //snackbar styling
+                                val snackbarView = view
+                                val snackbarLayout = this.view
+                                val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+
+                                // Set icon drawable (start/left side)
+                                val drawable = ContextCompat.getDrawable(view.context, R.drawable.error_icon) // replace with your drawable name
+                                drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+
+                                // Add padding between icon and text
+                                textView.compoundDrawablePadding = 30
+
+                                // Set the drawable to start (left) side
+                                textView.setCompoundDrawablesRelative(drawable, null, null, null)
+
+                                // Text color, size, font style
+                                textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+                                textView.textSize = 16f
+                                textView.setTypeface(Typeface.DEFAULT_BOLD)
+//
+//                                // Optional: background styling
+//                                snackbarLayout.setBackgroundColor(ContextCompat.getColor(view.context, R.color.))  // or set a drawable background
+
+                                addCallback(object : Snackbar.Callback() {
+                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                        super.onDismissed(transientBottomBar, event)
+                                        // Reset flag when Snackbar is dismissed
+                                        isSnackbarVisible = false
+                                    }
+                                })
+                                show()
+                            }
+
+                            // Set the flag to true when Snackbar is shown
+                            isSnackbarVisible = true
+                        }
+
                         //closes "signup_form.xml" without terminating functionality
                         closeButton.setOnClickListener {
                             visibility = View.GONE
 
-                            //note sure
-//                            clearAllEditTexts(signUpOverlay as ViewGroup)
-//                            disableAllNextButton()
+                            clearAllEditTexts(signUpOverlay as ViewGroup)
+                            //not sure
+                            //disableAllNextButton()
 
                         }
 
@@ -186,9 +249,14 @@ class LoginActivity : AppCompatActivity() {
                                 if (emailValid) {
                                     emailNextButton.isEnabled = true
                                     emailInput.error = null
+                                    // Dismiss the Snackbar if it's visible and the email is valid
+                                    currentSnackbar?.dismiss()
+
+                                    // Reset the currentSnackbar reference to null
+                                    currentSnackbar = null
                                 } else {
                                     emailNextButton.isEnabled = false
-                                    emailInput.error = "Please enter a valid email address"
+                                    showSnackbar(emailInput, "Please enter a valid email address")
                                 }
                             }
 
@@ -210,6 +278,31 @@ class LoginActivity : AppCompatActivity() {
                         val passwordGuideBlock = findViewById<LinearLayout>(R.id.block_password_guide)
                         val passwordInput = findViewById<EditText>(R.id.input_password)
 
+                        //toggle password visibility
+                        // TODO: create another drawable for visibility_on, apply same logic on confirm password
+                        var isPasswordVisible = false
+
+                        passwordInput.setOnTouchListener { _, event ->
+                            if (event.action == MotionEvent.ACTION_UP) {
+                                val drawableEnd = 2 // index of drawableEnd
+                                val drawable = passwordInput.compoundDrawables[drawableEnd]
+                                if (drawable != null && event.rawX >= (passwordInput.right - drawable.bounds.width())) {
+                                    // Toggle password visibility
+                                    isPasswordVisible = !isPasswordVisible
+                                    if (isPasswordVisible) {
+                                        passwordInput.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                                        passwordInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.visibility_off, 0)
+                                    } else {
+                                        passwordInput.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                                        passwordInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.visibility_off, 0)
+                                    }
+                                    // Move cursor to the end
+//                                    passwordInput.setSelection(passwordInput.text.length)
+//                                    return@setOnTouchListener true
+                                }
+                            }
+                            false
+                        }
 
                         //dynamically create radioButtons
                         val radioButtons = mutableListOf<RadioButton>()
@@ -253,6 +346,11 @@ class LoginActivity : AppCompatActivity() {
                                 //this enables confirm password input field
                                 if(radioButtonActive()) {
                                     confirmPasswordInput.isEnabled = true
+//                                    // Dismiss the Snackbar if it's visible and the email is valid
+//                                    currentSnackbar?.dismiss()
+//
+//                                    // Reset the currentSnackbar reference to null
+//                                    currentSnackbar = null
 
                                     //included text watcher for password authentication matching
                                     confirmPasswordInput.addTextChangedListener(object : TextWatcher {
@@ -270,10 +368,15 @@ class LoginActivity : AppCompatActivity() {
                                             if (confirmPasswordText == passwordText) {
                                                 passwordNextButton.isEnabled = true
                                                 passwordInput.error = null
+                                                // Dismiss the Snackbar if it's visible and the email is valid
+                                                currentSnackbar?.dismiss()
+
+                                                // Reset the currentSnackbar reference to null
+                                                currentSnackbar = null
 
                                             } else {
                                                 passwordNextButton.isEnabled = false
-                                                confirmPasswordInput.error = "Password mismatch."
+                                                showSnackbar(passwordInput, "Password mismatch")
                                             }
                                         }
 
@@ -284,15 +387,14 @@ class LoginActivity : AppCompatActivity() {
 
                                 } else {
                                     passwordNextButton.isEnabled = false
-
-                                    //set error message depending on validation error
-                                    when {
-                                        !s.toString().contains(Regex("\\d")) -> passwordInput.error = "Password must contain at least one number."
-                                        !s.toString().contains(Regex("[!@#\$%^&*()\\-_=+\\[{\\]}|;:'\",<.>/?]")) -> passwordInput.error = "Password must contain at least one special character (e.g., #, ?, !, $)."
-                                        s.toString().length < 10 -> passwordInput.error = "Password must be at least 10 characters long."
-                                        //s.toString().contains(confirmPasswordText) -> passwordInput.error = "Password mismatch."
-                                        else -> passwordInput.error = null // Clear error if everything is fine
-                                    }
+//
+//                                    //set error message depending on validation error
+//                                    when {
+//                                        !s.toString().contains(Regex("\\d")) -> showSnackbar(passwordInput, "Password must contain at least one number.")
+//                                        !s.toString().contains(Regex("[!@#\$%^&*()\\-_=+\\[{\\]}|;:'\",<.>/?]")) -> showSnackbar(passwordInput, "Password must contain at least one special character (e.g., #, ?, !, $).")
+//                                        s.toString().length < 10 -> showSnackbar(passwordInput, "Password must be at least 10 characters long.")
+//                                        else -> passwordInput.error = null // Clear error if everything is fine
+//                                    }
                                 }
                             }
 
@@ -301,6 +403,7 @@ class LoginActivity : AppCompatActivity() {
                             override fun afterTextChanged(s: Editable?) {}
                         })
 
+                        // TODO: implement age validation (must be 13yrs) 
                         val dateStyle = ContextThemeWrapper(context, R.style.SpinnerDatePickerDialogDark)
                         val datePicker = DatePicker(dateStyle, null, android.R.attr.datePickerStyle).apply {
                             calendarViewShown = false
