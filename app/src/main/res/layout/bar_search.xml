@@ -15,7 +15,7 @@
         android:drawablePadding="15dp"
         android:paddingStart="18dp"
         android:paddingEnd="15dp"
-        android:background="@drawable/input_field"
+        android:background="@drawable/round_corners"
         android:hint="@string/txt_search"
         android:textColorHint="@color/gray3"
         android:inputType="text"
