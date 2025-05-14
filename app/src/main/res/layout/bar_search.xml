@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/input_search"
+        android:layout_width="370dp"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:drawableStart="@drawable/ic_search"
+        android:drawableTint="@color/gray3"
+        android:drawablePadding="15dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="15dp"
+        android:background="@drawable/input_field"
+        android:hint="@string/txt_search"
+        android:textColorHint="@color/gray3"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="8dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:lines="1" />
+
+</merge>

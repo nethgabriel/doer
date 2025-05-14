@@ -123,7 +123,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="invisible"
             android:weightSum="9">
 
             <include
@@ -242,7 +242,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="invisible"
             android:weightSum="9">
 
             <include
