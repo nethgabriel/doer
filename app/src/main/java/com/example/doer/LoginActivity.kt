@@ -30,6 +30,7 @@ import java.util.Calendar
 import android.view.LayoutInflater
 import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 
 
 class LoginActivity : AppCompatActivity() {
@@ -549,7 +550,133 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        var loginOverlay: View? = null
+
+        val loginStub = findViewById<ViewStub>(R.id.login_stub)
+        val loginButton = findViewById<Button>(R.id.btn_login)
+
+        loginButton.setOnClickListener {
+            if (loginOverlay == null) {
+                try {
+                    loginOverlay = loginStub.inflate().apply {
+                        val closeButton = findViewById<ImageButton>(R.id.btn_close_login)
+                        val loginSection = findViewById<View>(R.id.section_login)
+
+                        val emailLoginInput = findViewById<EditText>(R.id.input_email_login)
+                        val passwordLoginInput = findViewById<EditText>(R.id.input_password_login)
+
+                        val logInButton = findViewById<Button>(R.id.btn_log_in)
+
+                        //clear all text input fields
+                        fun clearAllEditTexts(viewGroup: ViewGroup) {
+                            for (i in 0 until viewGroup.childCount) {
+                                when (val view = viewGroup.getChildAt(i)) {
+                                    is EditText -> view.text.clear()
+                                    is ViewGroup -> clearAllEditTexts(view)
+                                }
+                            }
+                        }
+
+                        //password visibility toggle
+                        fun setupPasswordVisibilityToggle(
+                            editText: EditText,
+                            iconVisible: Int = R.drawable.visibility_on,
+                            iconHidden: Int = R.drawable.visibility_off
+                        ) {
+                            var isPasswordVisible = false
+                            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconHidden, 0)
+
+                            editText.setOnTouchListener { _, event ->
+                                if (event.action == MotionEvent.ACTION_UP) {
+                                    val drawableEnd = 2
+                                    val drawable = editText.compoundDrawables[drawableEnd]
+                                    val extraTapArea = 100 // increase this value as needed
+
+                                    if (drawable != null && event.rawX >= (editText.right - drawable.bounds.width() - extraTapArea)) {
+                                        isPasswordVisible = !isPasswordVisible
+                                        if (isPasswordVisible) {
+                                            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                                            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconVisible, 0)
+                                        } else {
+                                            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                                            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconHidden, 0)
+                                        }
+                                    }
+                                }
+                                false
+                            }
+                        }
+
+                        setupPasswordVisibilityToggle(passwordLoginInput)
+
+                        // Global flag to track Snackbar visibility
+                        var isSnackbarVisible = false
+                        // Global variable to store the reference to the current Snackbar
+                        var currentSnackbar: Snackbar? = null
+
+                        fun showSnackbarError( anchorView: View, message: String) {
+                            // If a Snackbar is already visible, do not show it again
+                            if (isSnackbarVisible) return
+
+                            //val rootContainer = (anchorView.context as Activity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
+
+                            // Show Snackbar and set the flag to true
+                            currentSnackbar = Snackbar.make(anchorView, message, Snackbar.LENGTH_LONG).setAnchorView(anchorView).apply {
+
+                                val snackbarLayout = this.view
+                                val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+
+                                val drawable = ContextCompat.getDrawable(view.context, R.drawable.error_icon)
+                                drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+                                textView.setCompoundDrawablesRelative(drawable, null, null, null)
+                                textView.compoundDrawablePadding = 30
+
+                                textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+                                textView.textSize = 16f
+                                textView.setTypeface(Typeface.DEFAULT_BOLD)
+
+                                addCallback(object : Snackbar.Callback() {
+                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                        isSnackbarVisible = false
+                                    }
+                                })
+                                show()
+                            }
+
+                            // Set the flag to true when Snackbar is shown
+                            isSnackbarVisible = true
+                        }
+
+                        fun hidePassword(editText: EditText, iconHidden: Int = R.drawable.visibility_off) {
+                            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconHidden, 0)
+                        }
+
+                        //closes "login_form.xml" without terminating functionality
+                        closeButton.setOnClickListener {
+                            visibility = View.GONE
+                            hidePassword(passwordLoginInput)
+                            clearAllEditTexts(loginOverlay as ViewGroup)
+
+                            //dismiss the Snackbar if it's visible and the email is valid
+                            currentSnackbar?.dismiss()
+
+                            //reset the currentSnackbar reference to null
+                            currentSnackbar = null
+                        }
 
 
+
+
+                    }
+                }catch (e: Exception) {
+                    // TODO: something for debugging
+                }
+
+            } else {
+                //shows "login_form.xml"
+                loginOverlay?.visibility = View.VISIBLE
+            }
+        }
     }
 }
