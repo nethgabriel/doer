@@ -29,5 +29,11 @@
     <string name="icon_error_description">Error</string>
     <string name="txt_error_occurred">Error Occurred</string>
     <string name="btn_visibility_password">Toggle password visibility</string>
+    <string name="txt_username_title">What do you go by?</string>
+    <string name="txt_sample_username">John Doer</string>
+    <string name="description_username_input">This appears on your doer profile.</string>
+    <string name="txt_term_checkbox">I agree to the doer Terms of use and Privacy Policy</string>
+    <string name="txt_create_account">Create account</string>
+    <string name="txt_agree">Agree</string>
     <string name="txt_search">Search</string>
 </resources>
