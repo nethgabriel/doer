@@ -287,4 +287,117 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/section_username"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/form_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:weightSum="10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".8" />
+
+        <LinearLayout
+            android:id="@+id/ll_username_header"
+            android:layout_width="343dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:weightSum="12">
+
+            <include
+                android:id="@+id/back_username"
+                layout="@layout/btn_back" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".25" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="9"
+                android:text="@string/txt_username_title"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/input_username"
+            android:layout_width="343dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:autofillHints="username"
+            android:background="@drawable/edit_text_style"
+            android:ems="10"
+            android:hint="@string/txt_sample_username"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="338dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/description_username_input"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="normal" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="343dp"
+            android:layout_height=".5dp"
+            android:background="@drawable/divider_thin_horizontal" />
+
+        <LinearLayout
+            android:id="@+id/container_terms_privacy"
+            android:layout_width="343dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".5"
+            android:orientation="horizontal">
+
+
+            <CheckBox
+                android:id="@+id/checkbox_req_term_privacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:button="@drawable/checkbox_style"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/txt_term_checkbox"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <include
+            android:id="@+id/block_username"
+            layout="@layout/btn_create_account" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
