@@ -367,6 +367,39 @@ class LoginActivity : AppCompatActivity() {
                                 //implements passwordAuthentication function to string input
                                 val checks = passwordAuthentication(s.toString())
 
+                                //included text watcher for password authentication matching
+                                confirmPasswordInput.addTextChangedListener(object : TextWatcher {
+                                    override fun onTextChanged(
+                                        s: CharSequence?,
+                                        start: Int,
+                                        before: Int,
+                                        count: Int
+                                    ) {
+
+                                        val confirmPasswordText = confirmPasswordInput.text.toString()
+                                        val passwordText = passwordInput.text.toString()
+
+                                        //enables next button on password section
+                                        if (confirmPasswordText == passwordText) {
+                                            passwordNextButton.isEnabled = true
+                                            passwordInput.error = null
+                                            // Dismiss the Snackbar if it's visible and the email is valid
+                                            currentSnackbar?.dismiss()
+
+                                            // Reset the currentSnackbar reference to null
+                                            currentSnackbar = null
+
+                                        } else {
+                                            passwordNextButton.isEnabled = false
+                                            showSnackbarError(confirmPasswordInput, "Password mismatch")
+                                        }
+                                    }
+
+                                    //unused "TextWatcher" functions
+                                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                                    override fun afterTextChanged(s: Editable?) {}
+                                })
+
                                 //cycle through passwordAuthentication function to check for conditions, if true, radioButton = active
                                 checks.forEachIndexed { index, passed ->
                                     radioButtons[index].isChecked = passed
@@ -381,40 +414,12 @@ class LoginActivity : AppCompatActivity() {
 //                                    // Reset the currentSnackbar reference to null
 //                                    currentSnackbar = null
 
-                                    //included text watcher for password authentication matching
-                                    confirmPasswordInput.addTextChangedListener(object : TextWatcher {
-                                        override fun onTextChanged(
-                                            s: CharSequence?,
-                                            start: Int,
-                                            before: Int,
-                                            count: Int
-                                        ) {
-
-                                            val confirmPasswordText = confirmPasswordInput.text.toString()
-                                            val passwordText = passwordInput.text.toString()
-
-                                            //enables next button on password section
-                                            if (confirmPasswordText == passwordText) {
-                                                passwordNextButton.isEnabled = true
-                                                passwordInput.error = null
-                                                // Dismiss the Snackbar if it's visible and the email is valid
-                                                currentSnackbar?.dismiss()
-
-                                                // Reset the currentSnackbar reference to null
-                                                currentSnackbar = null
-
-                                            } else {
-                                                passwordNextButton.isEnabled = false
-                                                showSnackbarError(confirmPasswordInput, "Password mismatch")
-                                            }
-                                        }
-
-                                        //unused "TextWatcher" functions
-                                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                                        override fun afterTextChanged(s: Editable?) {}
-                                    })
+                                    ///////
 
                                 } else {
+                                    confirmPasswordInput.isEnabled = false
+                                    confirmPasswordInput.text.clear()
+                                    hidePassword(confirmPasswordInput)
                                     passwordNextButton.isEnabled = false
 //
 //                                    //set error message depending on validation error
@@ -425,6 +430,7 @@ class LoginActivity : AppCompatActivity() {
 //                                        else -> passwordInput.error = null // Clear error if everything is fine
 //                                    }
                                 }
+
                             }
 
                             //unused "TextWatcher" functions

@@ -295,7 +295,7 @@
         android:background="@drawable/form_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:weightSum="10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
