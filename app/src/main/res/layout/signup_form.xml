@@ -67,13 +67,20 @@
             android:layout_weight=".25"
             android:text="@string/txt_enter_email"
             android:textColor="@color/white"
-            android:textSize="24sp" />
+            android:textSize="22sp" />
+
+        <View
+            android:layout_width="343dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/one_of_four"/>
 
         <TextView
             android:id="@+id/textView5"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".25"
+            android:layout_weight=".2"
             android:text="@string/txt_email"
             android:textColor="@color/white"
             android:textSize="16sp" />
@@ -82,7 +89,7 @@
             android:id="@+id/input_email"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:autofillHints="emailAddress"
             android:background="@drawable/edit_text_style"
             android:ems="10"
@@ -144,14 +151,21 @@
                 android:text="@string/txt_create_password"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
         </LinearLayout>
+
+        <View
+            android:layout_width="343dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/two_of_four"/>
 
         <TextView
             android:id="@+id/textView8"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_weight="0.2"
             android:text="@string/txt_password"
             android:textColor="@color/white"
             android:textSize="16sp" />
@@ -177,7 +191,7 @@
             android:id="@+id/textView9"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_weight="0.2"
             android:text="@string/txt_confirm_password"
             android:textColor="@color/white"
             android:textSize="16sp" />
@@ -211,7 +225,7 @@
             android:id="@+id/block_password_guide"
             android:layout_width="343dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:enabled="false"
             android:orientation="vertical">
 
@@ -267,8 +281,15 @@
                 android:text="@string/txt_birthdate_title"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
         </LinearLayout>
+
+        <View
+            android:layout_width="343dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/three_of_four"/>
 
         <LinearLayout
             android:id="@+id/container_date_picker"
@@ -332,8 +353,15 @@
                 android:text="@string/txt_username_title"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
         </LinearLayout>
+
+        <View
+            android:layout_width="343dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/four_of_four"/>
 
         <EditText
             android:id="@+id/input_username"
