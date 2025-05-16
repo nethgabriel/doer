@@ -1,8 +1,12 @@
 package com.example.doer
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -24,16 +28,127 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import android.text.InputType
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.CheckBox
 import java.util.Calendar
 import android.view.LayoutInflater
+import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.text.contains
+import kotlin.text.toLowerCase
+import java.util.Locale
 
 
 class LoginActivity : AppCompatActivity() {
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+
+                    // Clear focus from the EditText to prevent it from regaining focus immediately
+                    v.clearFocus()
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    // Global flag to track Snackbar visibility
+    var isSnackbarVisible = false
+    // Global variable to store the reference to the current Snackbar
+    var currentSnackbar: Snackbar? = null
+
+    private fun showSnackbarError( anchorView: View, message: String) {
+        // If a Snackbar is already visible, do not show it again
+        if (isSnackbarVisible) return
+
+        //val rootContainer = (anchorView.context as Activity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
+
+        // Show Snackbar and set the flag to true
+        currentSnackbar = Snackbar.make(anchorView, message, Snackbar.LENGTH_LONG).setAnchorView(anchorView).apply {
+
+            val snackbarLayout = this.view
+            val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+
+            val drawable = ContextCompat.getDrawable(view.context, R.drawable.error_icon)
+            drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            textView.setCompoundDrawablesRelative(drawable, null, null, null)
+            textView.compoundDrawablePadding = 30
+
+            textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+            textView.textSize = 16f
+            textView.setTypeface(Typeface.DEFAULT_BOLD)
+
+            addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    isSnackbarVisible = false
+                }
+            })
+            show()
+        }
+
+        // Set the flag to true when Snackbar is shown
+        isSnackbarVisible = true
+    }
+
+    private fun showSnackbarSuccess(anchorView: View, message: String) {
+        // If a Snackbar is already visible, do not show it again
+        if (isSnackbarVisible) return
+
+        //val rootContainer = (anchorView.context as Activity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
+
+        // Show Snackbar and set the flag to true
+        currentSnackbar = Snackbar.make(anchorView, message, Snackbar.LENGTH_LONG).setAnchorView(anchorView).apply {
+
+            val snackbarLayout = this.view
+            val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+
+            val drawable = ContextCompat.getDrawable(view.context, R.drawable.success_icon)
+            drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            textView.setCompoundDrawablesRelative(drawable, null, null, null)
+            textView.compoundDrawablePadding = 30
+
+            textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+            textView.textSize = 16f
+            textView.setTypeface(Typeface.DEFAULT_BOLD)
+
+            addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    isSnackbarVisible = false
+                }
+            })
+            show()
+        }
+
+        // Set the flag to true when Snackbar is shown
+        isSnackbarVisible = true
+    }
+
+    data class User(
+        val email: String,
+        val username: String,
+        val age: String,
+        val birthDate: com.google.firebase.Timestamp? = null
+    )
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +160,6 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        // TODO: create another view stub for login
         //this is to make "signupOverlay" nullable
         var signUpOverlay: View? = null
 
@@ -69,7 +183,6 @@ class LoginActivity : AppCompatActivity() {
                         val passwordNextButton = passwordSection.findViewById<Button>(R.id.btn_next)
                         val birthdateNextButton = birthdateSection.findViewById<Button>(R.id.btn_next)
 
-                        // TODO: function after personal information
                         val createAccountButton = usernameSection.findViewById<Button>(R.id.btn_create_account)
                         createAccountButton.isEnabled = false
 
@@ -142,45 +255,7 @@ class LoginActivity : AppCompatActivity() {
                             //nextButtons[2].isEnabled = true
                         }
 
-                        // TODO: include snackbar for success message
-                        // TODO: refactor snackbar: not sure on placement
-                        // Global flag to track Snackbar visibility
-                        var isSnackbarVisible = false
-                        // Global variable to store the reference to the current Snackbar
-                        var currentSnackbar: Snackbar? = null
 
-                        fun showSnackbarError( anchorView: View, message: String) {
-                            // If a Snackbar is already visible, do not show it again
-                            if (isSnackbarVisible) return
-
-                            //val rootContainer = (anchorView.context as Activity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
-
-                            // Show Snackbar and set the flag to true
-                            currentSnackbar = Snackbar.make(anchorView, message, Snackbar.LENGTH_LONG).setAnchorView(anchorView).apply {
-
-                                val snackbarLayout = this.view
-                                val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-
-                                val drawable = ContextCompat.getDrawable(view.context, R.drawable.error_icon)
-                                drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-                                textView.setCompoundDrawablesRelative(drawable, null, null, null)
-                                textView.compoundDrawablePadding = 30
-
-                                textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
-                                textView.textSize = 16f
-                                textView.setTypeface(Typeface.DEFAULT_BOLD)
-
-                                addCallback(object : Snackbar.Callback() {
-                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                        isSnackbarVisible = false
-                                    }
-                                })
-                                show()
-                            }
-
-                            // Set the flag to true when Snackbar is shown
-                            isSnackbarVisible = true
-                        }
 
                         //password visibility toggle
                         fun setupPasswordVisibilityToggle(
@@ -226,8 +301,27 @@ class LoginActivity : AppCompatActivity() {
                             )
                         }
 
+                        fun isUsernameAvailable(username: String, onComplete: (isAvailable: Boolean, error: Exception?) -> Unit) {
+                        val lowercaseUsername = username.toLowerCase(Locale.ROOT) // Normalize
 
-                        //todo snack bar success
+                        db.collection("usernames").document(lowercaseUsername).get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                // If the document does NOT exist, the username is available
+                                onComplete(!documentSnapshot.exists(), null)
+                            }
+                            .addOnFailureListener { e ->
+                                // Handle the error (e.g., network issue)
+                                Log.e("UsernameCheck", "Error checking username availability", e)
+                                onComplete(false, e) // Assume not available or show an error
+                            }
+                        }
+
+                        fun getBirthDateFromDatePicker(datePicker: DatePicker): com.google.firebase.Timestamp {
+                            val birthDateCalendar = Calendar.getInstance().apply {
+                                set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+                            }
+                            return com.google.firebase.Timestamp(birthDateCalendar.time)
+                        }
 
                         //closes "signup_form.xml" without terminating functionality
                         closeButton.setOnClickListener {
@@ -328,8 +422,6 @@ class LoginActivity : AppCompatActivity() {
 
                             return listOf(hasNumber, hasSpecialChar, hasMinLength)
                         }
-
-
 
                         ///
 
@@ -463,21 +555,45 @@ class LoginActivity : AppCompatActivity() {
                         val usernameInput = findViewById<EditText>(R.id.input_username)
                         termsCheckbox.isEnabled = usernameInput.text.toString().isNotBlank()
 
-                        usernameInput.addTextChangedListener(object : TextWatcher{
-                            override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int) {
+                        usernameInput.addTextChangedListener(object : TextWatcher {
+                            private var searchForUsernameJob: Job? = null
 
-                                //implements passwordAuthentication function to string input
-                                val usernameText = s.toString()
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                val usernameText = s.toString().trim()
                                 termsCheckbox.isEnabled = usernameText.isNotBlank()
+                                createAccountButton.isEnabled = false // Disable button while checking
+
+                                searchForUsernameJob?.cancel() // Cancel previous check
+
+                                if (usernameText.isBlank()) {
+                                    // Handle empty username case
+                                    usernameInput.error = null
+                                    createAccountButton.isEnabled = false
+                                    return
+                                }
+
+                                // Debounce the availability check
+                                searchForUsernameJob = lifecycleScope.launch {
+                                    delay(100) // Adjust debounce delay as needed (e.g., 500ms)
+                                    isUsernameAvailable(usernameText) { isAvailable, error ->
+                                        if (error != null) {
+                                            // Handle error checking availability (e.g., show a temporary message)
+                                            usernameInput.error = "Error checking username."
+                                            createAccountButton.isEnabled = false
+                                        } else {
+                                            if (isAvailable) {
+                                                usernameInput.error = null // Clear error
+                                            } else {
+                                                usernameInput.error = "Username is already taken."
+                                                createAccountButton.isEnabled = false
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                             override fun afterTextChanged(s: Editable?) {}
-
                         })
 
                         //application guidelines pop-up text
@@ -491,7 +607,13 @@ class LoginActivity : AppCompatActivity() {
                             val termsText = dialogView.findViewById<TextView>(R.id.termsText)
                             val agreeButton = dialogView.findViewById<Button>(R.id.agreeButton)
                             val scrollView = dialogView.findViewById<ScrollView>(R.id.termsScrollView)
+                            val exitButton = dialogView.findViewById<ImageButton>(R.id.btn_exit)
 
+                            exitButton.setOnClickListener{
+                                dialog.dismiss()
+                                termsCheckbox.isChecked = false
+                                termsCheckboxWaitAgree = false
+                            }
                             // Load from res/raw
                             val termsContent = resources.openRawResource(R.raw.terms_privacy)
                                 .bufferedReader()
@@ -516,17 +638,18 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         //Checkbox listener
-                        // TODO: fix active checkbox style, issue: does not show custom style
-                        ///
-
                         termsCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                            if (termsCheckboxWaitAgree) return@setOnCheckedChangeListener
+                            if (termsCheckboxWaitAgree) {
+                                if (!isChecked) {
+                                    termsCheckboxWaitAgree = false
+                                }
+                                return@setOnCheckedChangeListener
+                            }
 
                             if (isChecked) {
                                 // Temporarily prevent re-trigger
                                 termsCheckboxWaitAgree = true
                                 termsCheckbox.isChecked = false
-                                termsCheckboxWaitAgree = false
 
                                 showTermsDialog {
                                     // Only set checked = true after user agrees
@@ -535,14 +658,166 @@ class LoginActivity : AppCompatActivity() {
                                     termsCheckboxWaitAgree = false
                                     createAccountButton.isEnabled = true
                                 }
+                            } else {
+                                createAccountButton.isEnabled = false
                             }
+                        }
+
+                        fun calculateAgeFromDatePicker(datePicker: DatePicker): Int {
+                            val birthDate = Calendar.getInstance().apply {
+                                set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+                            }
+
+                            val today = Calendar.getInstance()
+                            var age = today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR)
+                            if (today.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {
+                                age--
+                            }
+                            return age
+                        }
+
+                        // Your registerUserWithUsername function (needs to accept the User data class)
+                        // Define this function outside the createAccountButton.setOnClickListener
+                        fun registerUserWithUsername(uid: String, username: String, email: String, userData: User, onComplete: (isSuccess: Boolean, error: Exception?) -> Unit) {
+                            val lowercaseUsername = username.toLowerCase(Locale.ROOT) // Normalize
+
+                            val batch = db.batch()
+
+                            // Add the user document to the batch
+                            val userRef = db.collection("users").document(uid)
+                            // Use the data class object directly here!
+                            batch.set(userRef, userData)
+
+
+                            // Add the username document to the batch
+                            val usernameRef = db.collection("usernames").document(lowercaseUsername)
+                            batch.set(usernameRef, hashMapOf(
+                                "uid" to uid, // Store the UID for easy lookup
+                                "registeredAt" to FieldValue.serverTimestamp()
+                            ))
+
+                            // Commit the batch
+                            batch.commit()
+                                .addOnSuccessListener {
+                                    onComplete(true, null) // Both writes succeeded
+                                }
+                                .addOnFailureListener { e ->
+                                    // If any write in the batch fails, the entire batch fails
+                                    onComplete(false, e)
+                                }
                         }
 
 
 
+                        createAccountButton.setOnClickListener createAccountBtnListener@ {
+                            val email = emailInput.text.toString().trim()
+                            val password = confirmPasswordInput.text.toString().trim()
+                            val username = usernameInput.text.toString().trim()
+                            val age = calculateAgeFromDatePicker(datePicker).toString().trim() // Get age here
+                            val birthDateTimestamp = getBirthDateFromDatePicker(datePicker)
+
+                            val anchorViewForSnackbar = findViewById<Button>(R.id.btn_create_account)
+
+                            if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                                showSnackbarError(anchorViewForSnackbar, "Please enter a valid email address.")
+                                emailInput.requestFocus()
+                                createAccountButton.isEnabled = false
+                                termsCheckbox.isChecked = false
+                                return@createAccountBtnListener
+                            }
+                            if (username.isEmpty() || username.length < 3) { // Example: Minimum 3 characters
+                                showSnackbarError(anchorViewForSnackbar, "Username must be at least 3 characters.")
+                                usernameInput.requestFocus()
+                                createAccountButton.isEnabled = false
+                                termsCheckbox.isChecked = false
+                                return@createAccountBtnListener
+                            }
+
+                            isUsernameAvailable(username) { isAvailable, error ->
+                                if (error != null) {
+                                    showSnackbarError(anchorViewForSnackbar, "Error checking username availability. Please try again.")
+                                } else if (!isAvailable) {
+                                    // Username is already taken
+                                    showSnackbarError(anchorViewForSnackbar, "Username is already taken. Please choose another.")
+                                    usernameInput.requestFocus()
+                                } else {
+                                    // Username is available, proceed with Firebase Authentication registration
+                                    auth.createUserWithEmailAndPassword(email, password)
+                                        .addOnCompleteListener(this@LoginActivity) { task ->
+                                            if (task.isSuccessful) {
+                                                val user = auth.currentUser
+                                                user?.let { firebaseUser ->
+                                                    val uid = firebaseUser.uid
+                                                    // **Now call registerUserWithUsername to save user data to Firestore atomically**
+
+                                                    // Create the User data object to pass to the function
+                                                    val userData = User(
+                                                        email = email,
+                                                        username = username,
+                                                        age = age ,
+                                                        birthDate = birthDateTimestamp
+                                                    )
+
+                                                    registerUserWithUsername(uid, username, email, userData) { isSuccess, dbError ->
+                                                        if (isSuccess) {
+                                                            // Successfully registered user in Auth and saved data in Firestore
+                                                            showSnackbarSuccess(
+                                                                anchorViewForSnackbar,
+                                                                "Account created successfully"
+                                                            )
+                                                            val delayMillis = 3000L
+                                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                                closeButton.performClick() // Or navigate to the next screen (e.g., home screen)
+                                                            }, delayMillis)
+                                                        } else {
+                                                            // Error saving data to Firestore (likely username conflict caught by security rules or batch failure)
+                                                            // Handle the case where Firebase Auth user was created but Firestore write failed.
+                                                            // You might want to:
+                                                            // 1. Delete the Firebase Auth user.
+                                                            // 2. Inform the user the username is taken and they need to try again.
+                                                            // 3. Offer to log in with the email/password they just created.
+                                                            showSnackbarError(
+                                                                anchorViewForSnackbar,
+                                                                "Error saving user data: ${dbError?.message ?: "Unknown error"}. Username might be taken."
+                                                            )
+                                                            // Optional: Delete the Firebase Auth user if the Firestore write fails critically.
+                                                            // firebaseUser.delete().addOnCompleteListener { deleteAuthTask ->
+                                                            //     if (deleteAuthTask.isSuccessful) {
+                                                            //         Log.d("LoginActivity", "Firebase Auth user deleted after Firestore write failure")
+                                                            //     } else {
+                                                            //         Log.e("LoginActivity", "Failed to delete Firebase Auth user after Firestore write failure", deleteAuthTask.exception)
+                                                            //     }
+                                                            // }
+                                                        }
+                                                    }
+                                                } ?: run {
+                                                    // Should ideally not happen if task.isSuccessful is true
+                                                    showSnackbarError(
+                                                        anchorViewForSnackbar,
+                                                        "Account created, but failed to get user information."
+                                                    )
+                                                }
+                                            } else {
+                                                // Firebase Authentication failed (e.g., email already in use, weak password)
+                                                showSnackbarError(
+                                                    anchorViewForSnackbar,
+                                                    "Authentication failed: ${task.exception?.message}"
+                                                )
+                                            }
+                                        }
+                                }
+                            }
+                        }
+
                     }
                 } catch (e: Exception) {
-                    TODO("Not yet implemented")
+                    Log.e("LoginActivity", "Error inflating signup form", e)
+
+                    Toast.makeText(
+                        this,
+                        "An error occurred while loading the signup form.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } else {
                 //shows "signup_form.xml"
@@ -560,7 +835,6 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     loginOverlay = loginStub.inflate().apply {
                         val closeButton = findViewById<ImageButton>(R.id.btn_close_login)
-                        val loginSection = findViewById<View>(R.id.section_login)
 
                         val emailLoginInput = findViewById<EditText>(R.id.input_email_login)
                         val passwordLoginInput = findViewById<EditText>(R.id.input_password_login)
@@ -609,43 +883,8 @@ class LoginActivity : AppCompatActivity() {
 
                         setupPasswordVisibilityToggle(passwordLoginInput)
 
-                        // Global flag to track Snackbar visibility
-                        var isSnackbarVisible = false
-                        // Global variable to store the reference to the current Snackbar
-                        var currentSnackbar: Snackbar? = null
 
-                        fun showSnackbarError( anchorView: View, message: String) {
-                            // If a Snackbar is already visible, do not show it again
-                            if (isSnackbarVisible) return
 
-                            //val rootContainer = (anchorView.context as Activity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
-
-                            // Show Snackbar and set the flag to true
-                            currentSnackbar = Snackbar.make(anchorView, message, Snackbar.LENGTH_LONG).setAnchorView(anchorView).apply {
-
-                                val snackbarLayout = this.view
-                                val textView = snackbarLayout.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-
-                                val drawable = ContextCompat.getDrawable(view.context, R.drawable.error_icon)
-                                drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-                                textView.setCompoundDrawablesRelative(drawable, null, null, null)
-                                textView.compoundDrawablePadding = 30
-
-                                textView.setTextColor(ContextCompat.getColor(view.context, R.color.white))
-                                textView.textSize = 16f
-                                textView.setTypeface(Typeface.DEFAULT_BOLD)
-
-                                addCallback(object : Snackbar.Callback() {
-                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                        isSnackbarVisible = false
-                                    }
-                                })
-                                show()
-                            }
-
-                            // Set the flag to true when Snackbar is shown
-                            isSnackbarVisible = true
-                        }
 
                         fun hidePassword(editText: EditText, iconHidden: Int = R.drawable.visibility_off) {
                             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -665,8 +904,126 @@ class LoginActivity : AppCompatActivity() {
                             currentSnackbar = null
                         }
 
+                        //Log In Button
+                        logInButton.setOnClickListener logInBtn@{
+                            val email = emailLoginInput.text.toString().trim()
+                            val password = passwordLoginInput.text.toString().trim()
 
+                            // Basic Validation
+                            if (email.isEmpty()) {
+                                showSnackbarError(
+                                    emailLoginInput,
+                                    "Please enter your email address."
+                                )
+                                emailLoginInput.requestFocus()//move focus to the email field
+                                return@logInBtn //stop further processing if email is empty
+                            }
 
+                            if (password.isEmpty()) {
+                                showSnackbarError(
+                                    passwordLoginInput,
+                                    "Please enter your password."
+                                )
+                                passwordLoginInput.requestFocus() // Optional: move focus to the password field
+                                return@logInBtn // Stop further processing if password is empty
+                            }
+
+                            // More advanced email format validation (optional but recommended)
+                            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                                showSnackbarError(
+                                    emailLoginInput,
+                                    "Please enter a valid email address."
+                                )
+                                emailLoginInput.requestFocus()
+                                return@logInBtn
+                            }
+
+                            //proceed to firebase authentication
+                            auth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(this@LoginActivity) { task ->
+                                    if (task.isSuccessful) {
+                                        val user = auth.currentUser
+
+                                        user?.let { firebaseUser ->
+                                            //get the user's UID
+                                            val uid = firebaseUser.uid
+
+                                            //fetch user data from Firestore
+                                            db.collection("users").document(uid)
+                                                .get()
+                                                .addOnSuccessListener { documentSnapshot ->
+                                                    if (documentSnapshot.exists()) {
+                                                        //if document exists, get the username
+                                                        val username = documentSnapshot.getString("username")
+
+                                                        //show success Snackbar with username
+                                                        showSnackbarSuccess(
+                                                            logInButton,
+                                                            "Login successful! Welcome, ${username ?: "User"}" // Use "User" as a fallback
+                                                        )
+
+                                                        // Example: Navigate to your main activity after a delay
+                                                        val delayMillis = 2000L // 2 second delay
+                                                        Handler(Looper.getMainLooper()).postDelayed({
+                                                            val intent = Intent(this@LoginActivity, LoginActivity::class.java)
+                                                            startActivity(intent)
+                                                            finish()
+                                                        }, delayMillis)
+                                                    } else {
+                                                        // Document doesn't exist (shouldn't happen if signup worked)
+                                                        Log.w("LoginActivity", "User document not found for UID: $uid")
+                                                        showSnackbarError(
+                                                            logInButton,
+                                                            "Login successful, but couldn't retrieve username."
+                                                        )
+                                                        // Still navigate, but maybe log out or handle this edge case
+                                                        val delayMillis = 2000L
+                                                        Handler(Looper.getMainLooper()).postDelayed({
+                                                            val intent = Intent(this@LoginActivity, LoginActivity::class.java)
+                                                            startActivity(intent)
+                                                            finish()
+                                                        }, delayMillis)
+                                                    }
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    // Error fetching document
+                                                    Log.e("LoginActivity", "Error fetching user document", e)
+                                                    showSnackbarError(
+                                                        logInButton,
+                                                        "Login successful, but error retrieving username: ${e.message}"
+                                                    )
+                                                    // Still navigate, but handle the error appropriately
+                                                    val delayMillis = 2000L
+                                                    Handler(Looper.getMainLooper()).postDelayed({
+                                                        val intent = Intent(this@LoginActivity, LoginActivity::class.java)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    }, delayMillis)
+                                                }
+                                        } ?: run {
+                                            // Handle the case where firebaseUser is null after successful login (unlikely)
+                                            showSnackbarError(
+                                                logInButton,
+                                                "Login successful, but failed to get user information."
+                                            )
+                                            val delayMillis = 2000L
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                val intent = Intent(this@LoginActivity, LoginActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }, delayMillis)
+                                        }
+
+                                    } else {
+                                        //login failed (Firebase Auth error)
+                                        showSnackbarError(
+                                            logInButton,
+                                            "Login failed: ${task.exception?.message}"
+                                        )
+                                    }
+                                }
+
+                        }
 
                     }
                 }catch (e: Exception) {

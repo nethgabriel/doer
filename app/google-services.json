@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "150225775657",
+    "project_id": "doer-firebase",
+    "storage_bucket": "doer-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150225775657:android:b9d7a11fa527dbf0168038",
+        "android_client_info": {
+          "package_name": "com.example.doer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVehK-3gCaDuPvv3MSSlHe8GRqgtJvce8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
