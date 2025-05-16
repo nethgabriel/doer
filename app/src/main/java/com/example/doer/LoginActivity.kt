@@ -765,7 +765,7 @@ class LoginActivity : AppCompatActivity() {
                                                                 anchorViewForSnackbar,
                                                                 "Account created successfully"
                                                             )
-                                                            val delayMillis = 3000L
+                                                            val delayMillis = 2000L
                                                             Handler(Looper.getMainLooper()).postDelayed({
                                                                 closeButton.performClick() // Or navigate to the next screen (e.g., home screen)
                                                             }, delayMillis)
@@ -963,7 +963,7 @@ class LoginActivity : AppCompatActivity() {
                                                         )
 
                                                         // Example: Navigate to your main activity after a delay
-                                                        val delayMillis = 2000L // 2 second delay
+                                                        val delayMillis = 1000L // 2 second delay
                                                         Handler(Looper.getMainLooper()).postDelayed({
                                                             val intent = Intent(this@LoginActivity, LoginActivity::class.java)
                                                             startActivity(intent)
@@ -977,7 +977,7 @@ class LoginActivity : AppCompatActivity() {
                                                             "Login successful, but couldn't retrieve username."
                                                         )
                                                         // Still navigate, but maybe log out or handle this edge case
-                                                        val delayMillis = 2000L
+                                                        val delayMillis = 1000L
                                                         Handler(Looper.getMainLooper()).postDelayed({
                                                             val intent = Intent(this@LoginActivity, LoginActivity::class.java)
                                                             startActivity(intent)
@@ -993,7 +993,7 @@ class LoginActivity : AppCompatActivity() {
                                                         "Login successful, but error retrieving username: ${e.message}"
                                                     )
                                                     // Still navigate, but handle the error appropriately
-                                                    val delayMillis = 2000L
+                                                    val delayMillis = 1000L
                                                     Handler(Looper.getMainLooper()).postDelayed({
                                                         val intent = Intent(this@LoginActivity, LoginActivity::class.java)
                                                         startActivity(intent)
@@ -1006,7 +1006,7 @@ class LoginActivity : AppCompatActivity() {
                                                 logInButton,
                                                 "Login successful, but failed to get user information."
                                             )
-                                            val delayMillis = 2000L
+                                            val delayMillis = 1000L
                                             Handler(Looper.getMainLooper()).postDelayed({
                                                 val intent = Intent(this@LoginActivity, LoginActivity::class.java)
                                                 startActivity(intent)
