@@ -501,27 +501,12 @@ class LoginActivity : AppCompatActivity() {
                                 //this enables confirm password input field
                                 if(radioButtonActive()) {
                                     confirmPasswordInput.isEnabled = true
-//                                    // Dismiss the Snackbar if it's visible and the email is valid
-//                                    currentSnackbar?.dismiss()
-//
-//                                    // Reset the currentSnackbar reference to null
-//                                    currentSnackbar = null
-
-                                    ///////
-
                                 } else {
                                     confirmPasswordInput.isEnabled = false
                                     confirmPasswordInput.text.clear()
                                     hidePassword(confirmPasswordInput)
                                     passwordNextButton.isEnabled = false
 //
-//                                    //set error message depending on validation error
-//                                    when {
-//                                        !s.toString().contains(Regex("\\d")) -> showSnackbarError(passwordInput, "Password must contain at least one number.")
-//                                        !s.toString().contains(Regex("[!@#\$%^&*()\\-_=+\\[{\\]}|;:'\",<.>/?]")) -> showSnackbarError(passwordInput, "Password must contain at least one special character (e.g., #, ?, !, $).")
-//                                        s.toString().length < 10 -> showSnackbarError(passwordInput, "Password must be at least 10 characters long.")
-//                                        else -> passwordInput.error = null // Clear error if everything is fine
-//                                    }
                                 }
 
                             }
@@ -767,27 +752,13 @@ class LoginActivity : AppCompatActivity() {
                                                             )
                                                             val delayMillis = 2000L
                                                             Handler(Looper.getMainLooper()).postDelayed({
-                                                                closeButton.performClick() // Or navigate to the next screen (e.g., home screen)
+                                                                closeButton.performClick()
                                                             }, delayMillis)
                                                         } else {
-                                                            // Error saving data to Firestore (likely username conflict caught by security rules or batch failure)
-                                                            // Handle the case where Firebase Auth user was created but Firestore write failed.
-                                                            // You might want to:
-                                                            // 1. Delete the Firebase Auth user.
-                                                            // 2. Inform the user the username is taken and they need to try again.
-                                                            // 3. Offer to log in with the email/password they just created.
                                                             showSnackbarError(
                                                                 anchorViewForSnackbar,
                                                                 "Error saving user data: ${dbError?.message ?: "Unknown error"}. Username might be taken."
                                                             )
-                                                            // Optional: Delete the Firebase Auth user if the Firestore write fails critically.
-                                                            // firebaseUser.delete().addOnCompleteListener { deleteAuthTask ->
-                                                            //     if (deleteAuthTask.isSuccessful) {
-                                                            //         Log.d("LoginActivity", "Firebase Auth user deleted after Firestore write failure")
-                                                            //     } else {
-                                                            //         Log.e("LoginActivity", "Failed to delete Firebase Auth user after Firestore write failure", deleteAuthTask.exception)
-                                                            //     }
-                                                            // }
                                                         }
                                                     }
                                                 } ?: run {
@@ -965,7 +936,7 @@ class LoginActivity : AppCompatActivity() {
                                                         // Example: Navigate to your main activity after a delay
                                                         val delayMillis = 1000L // 2 second delay
                                                         Handler(Looper.getMainLooper()).postDelayed({
-                                                            val intent = Intent(this@LoginActivity, LoginActivity::class.java)
+                                                            val intent = Intent(this@LoginActivity, ProfileActivity::class.java)
                                                             startActivity(intent)
                                                             finish()
                                                         }, delayMillis)

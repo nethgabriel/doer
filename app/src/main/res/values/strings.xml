@@ -37,4 +37,13 @@
     <string name="txt_agree">Agree</string>
     <string name="txt_search">Search</string>
     <string name="btn_exit_description">Exit</string>
+    <string name="description_scrollable_content">Scroll to see more</string>
+    <string name="description_default_profile">Default profile container</string>
+    <string name="description_default_spaces">Default spaces container</string>
+    <string name="description_default_home">Default home container</string>
+    <string name="description_default_challenge">Default challenge container</string>
+    <string name="description_btn_profile">Go to profile container</string>
+    <string name="description_btn_spaces">Go to  spaces container</string>
+    <string name="description_btn_home">Go to  home container</string>
+    <string name="description_btn_challenge">Go to  challenge container</string>
 </resources>
